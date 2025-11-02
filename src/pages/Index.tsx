@@ -74,13 +74,17 @@ const Index = () => {
               </p>
 
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="group">
-                  Browse Templates
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <Button size="lg" className="group" asChild>
+                  <a href="/templates">
+                    Browse Templates
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </a>
                 </Button>
-                <Button size="lg" variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Start Downloading
+                <Button size="lg" variant="outline" asChild>
+                  <a href="/templates">
+                    <Download className="mr-2 h-4 w-4" />
+                    Start Downloading
+                  </a>
                 </Button>
               </div>
 
@@ -210,9 +214,11 @@ const Index = () => {
           <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
             Download professional frame templates for free. No credit card, no sign-up.
           </p>
-          <Button size="lg" variant="secondary">
-            Browse All Templates
-            <ArrowRight className="ml-2 h-4 w-4" />
+          <Button size="lg" variant="secondary" asChild>
+            <a href="/templates">
+              Browse All Templates
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </a>
           </Button>
         </div>
       </section>

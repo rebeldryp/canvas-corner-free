@@ -25,11 +25,13 @@ export const Header = () => {
 
           <nav className="flex items-center space-x-6">
             <Link to="/templates" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
-              Templates
+              Browse
             </Link>
-            <Button variant="default" size="sm">
-              Get Started
-            </Button>
+            <Link to="/templates">
+              <Button variant="default" size="sm">
+                Get Started
+              </Button>
+            </Link>
           </nav>
         </div>
       </div>
