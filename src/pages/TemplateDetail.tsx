@@ -12,7 +12,9 @@ import { toast } from "sonner";
 const TemplateDetail = () => {
   const { id } = useParams();
 
-  const { data: template, isLoading } = useQuery({
+  const SUPABASE_ENABLED = import.meta.env.VITE_SUPABASE_ENABLED !== "false";
+  const SUPABASE_READY = SUPABASE_ENABLED && Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+  const { data: template, isLoading, error } = useQuery({
     queryKey: ["template", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -26,7 +28,22 @@ const TemplateDetail = () => {
       if (error) throw error;
       return data;
     },
+    enabled: SUPABASE_READY,
   });
+
+  if (!SUPABASE_READY) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 lg:px-8 py-24 text-center">
+          <h1 className="text-3xl font-bold mb-4">Live data disabled</h1>
+          <Link to="/">
+            <Button>Return Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleDownload = async (format: string) => {
     if (!template) return;
@@ -39,11 +56,7 @@ const TemplateDetail = () => {
         ip_address: null, // In production, this would come from edge function
       });
 
-      // Increment download count
-      await supabase
-        .from("templates")
-        .update({ downloads_count: template.downloads_count + 1 })
-        .eq("id", template.id);
+      // downloads_count is incremented by DB trigger on insert into download_logs
 
       toast.success(`Downloading ${template.title} as ${format.toUpperCase()}`);
       
@@ -72,6 +85,20 @@ const TemplateDetail = () => {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 lg:px-8 py-24 text-center">
+          <h1 className="text-3xl font-bold mb-4">Failed to load template</h1>
+          <Link to="/">
+            <Button>Return Home</Button>
+          </Link>
         </div>
       </div>
     );
@@ -113,7 +140,7 @@ const TemplateDetail = () => {
             </Card>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Download className="h-4 w-4" />
-              <span>{template.downloads_count.toLocaleString()} downloads</span>
+              <span>{(template.downloads_count ?? 0).toLocaleString()} downloads</span>
             </div>
           </div>
 
@@ -158,7 +185,7 @@ const TemplateDetail = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm text-muted-foreground">Formats</div>
-                  <div className="font-medium">{template.file_formats.length} available</div>
+                  <div className="font-medium">{(template.file_formats ?? []).length} available</div>
                 </div>
               </div>
             </div>
@@ -172,7 +199,7 @@ const TemplateDetail = () => {
                 Download Options
               </h2>
               <div className="grid sm:grid-cols-2 gap-3">
-                {template.file_formats.map((format) => (
+                {(template.file_formats ?? []).map((format) => (
                   <Button
                     key={format}
                     onClick={() => handleDownload(format)}

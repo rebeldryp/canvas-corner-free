@@ -1,0 +1,270 @@
+[
+  {
+    "id": "TC001",
+    "title": "Admin access granted to owner email",
+    "description": "Verify that only the user with the owner email can access admin routes when Supabase is enabled.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Ensure environment variable VITE_SUPABASE_ENABLED is true"
+      },
+      {
+        "type": "action",
+        "description": "Set authenticated user email to OWNER_EMAIL"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that admin page is accessible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/templates"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that admin templates page is accessible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/analytics"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that admin analytics page is accessible"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /admin/settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Check that admin settings page is accessible"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Admin access denied to non-owner emails",
+    "description": "Verify that users with emails other than the owner email cannot access any admin routes even when Supabase is enabled.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Ensure environment variable VITE_SUPABASE_ENABLED is true"
+      },
+      {
+        "type": "action",
+        "description": "Set authenticated user email to a non-owner email"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect to unauthorized page"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin/templates"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin/analytics"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin/settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Admin access completely disabled when Supabase is not enabled",
+    "description": "Verify that no user, including the owner, can access admin routes when environment variable VITE_SUPABASE_ENABLED is false.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Set environment variable VITE_SUPABASE_ENABLED to false"
+      },
+      {
+        "type": "action",
+        "description": "Authenticate as owner email"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect away"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin/templates"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin/analytics"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate to /admin/settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access denied or redirect"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Admin pages enforce guard regardless of user role when Supabase enabled",
+    "description": "Verify that all admin feature pages enforce access guard by restricting access only to the owner email user when Supabase is enabled, denying guest or other roles.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Set VITE_SUPABASE_ENABLED to true"
+      },
+      {
+        "type": "action",
+        "description": "Log in as guest user role"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to each admin route"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify each admin page denies access or redirects"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Admin pages deny access to unauthenticated users",
+    "description": "Verify that unauthenticated users cannot access any admin pages and are redirected to login or shown access denied.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Ensure no user is authenticated"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access /admin, /admin/templates, /admin/analytics, and /admin/settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is denied or redirected to login for each admin route"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Owner email env variable presence validation",
+    "description": "Verify system behavior when OWNER_EMAIL environment variable is missing or empty, ensuring no unintended admin access.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Unset or clear OWNER_EMAIL environment variable"
+      },
+      {
+        "type": "action",
+        "description": "Set VITE_SUPABASE_ENABLED to true"
+      },
+      {
+        "type": "action",
+        "description": "Authenticate as any user email"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify admin access is denied due to missing owner email configuration"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Case sensitivity check for owner email",
+    "description": "Verify that admin access is denied if email case does not exactly match OWNER_EMAIL to ensure case sensitivity in email verification.",
+    "category": "security",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Set VITE_SUPABASE_ENABLED to true"
+      },
+      {
+        "type": "action",
+        "description": "Authenticate with an email that matches OWNER_EMAIL except for case differences"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access /admin"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is denied due to case mismatch"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Verify redirect or error UI on access denial",
+    "description": "Check that when access is denied for admin pages, the user sees an appropriate error message or is redirected to a safe location.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Authenticate as non-owner user with VITE_SUPABASE_ENABLED true"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to each admin page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that appropriate error message is displayed or user is redirected away"
+      }
+    ]
+  }
+]

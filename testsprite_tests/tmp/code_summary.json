@@ -1,0 +1,86 @@
+{
+  "tech_stack": [
+    "TypeScript",
+    "React",
+    "Vite",
+    "Tailwind CSS",
+    "@tanstack/react-query",
+    "react-router-dom",
+    "Supabase (Postgres/Auth/Storage/Edge Functions)"
+  ],
+  "features": [
+    {
+      "name": "Routing and App Shell",
+      "description": "App-level routing, error boundary, query client, and admin route guards.",
+      "files": ["src/App.tsx", "src/main.tsx", "src/components/ErrorBoundary.tsx", "src/admin/useAdminGuard.tsx"]
+    },
+    {
+      "name": "Public Pages",
+      "description": "Visitor-facing pages for home, templates listing, template detail, login, and 404.",
+      "files": [
+        "src/pages/Index.tsx",
+        "src/pages/Templates.tsx",
+        "src/pages/TemplateDetail.tsx",
+        "src/pages/Login.tsx",
+        "src/pages/NotFound.tsx"
+      ]
+    },
+    {
+      "name": "Admin Pages",
+      "description": "Owner-only admin dashboard, templates CRUD, template edit, analytics, settings, layout.",
+      "files": [
+        "src/pages/admin/AdminDashboard.tsx",
+        "src/pages/admin/AdminTemplates.tsx",
+        "src/pages/admin/AdminTemplateEdit.tsx",
+        "src/pages/admin/AdminAnalytics.tsx",
+        "src/pages/admin/AdminSettings.tsx",
+        "src/pages/admin/AdminLayout.tsx",
+        "src/pages/admin/AdminUsers.tsx"
+      ]
+    },
+    {
+      "name": "UI Components",
+      "description": "Reusable components including header, template cards, category filter, and UI primitives.",
+      "files": [
+        "src/components/Header.tsx",
+        "src/components/TemplateCard.tsx",
+        "src/components/CategoryFilter.tsx",
+        "src/components/ui/*"
+      ]
+    },
+    {
+      "name": "Hooks",
+      "description": "Custom hooks for mobile detection and toast notifications.",
+      "files": ["src/hooks/use-mobile.tsx", "src/hooks/use-toast.ts"]
+    },
+    {
+      "name": "Supabase Integration",
+      "description": "Client initialization, typed database definitions, and safe disabled behavior.",
+      "files": ["src/integrations/supabase/client.ts", "src/integrations/supabase/types.ts"]
+    },
+    {
+      "name": "Utilities and Styles",
+      "description": "Utility functions and global styling with Tailwind.",
+      "files": ["src/lib/utils.ts", "src/index.css", "src/App.css", "tailwind.config.ts"]
+    },
+    {
+      "name": "Supabase Schema and Edge Functions",
+      "description": "SQL migrations and edge function scaffolds for template workflows and RBAC.",
+      "files": [
+        "supabase/migrations/001_init_supabase.sql",
+        "supabase/migrations/002_admin_schema.sql",
+        "supabase/migrations/003_drop_approvals.sql",
+        "supabase/functions/*"
+      ]
+    },
+    {
+      "name": "Testsprite Artifacts",
+      "description": "PRD and test plan used by Testsprite MCP to run automated checks.",
+      "files": [
+        "testsprite_tests/standard_prd.json",
+        "testsprite_tests/testsprite_frontend_test_plan.json",
+        "testsprite_tests/tmp/code_summary.json"
+      ]
+    }
+  ]
+}

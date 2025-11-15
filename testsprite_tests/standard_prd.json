@@ -1,0 +1,16 @@
+{
+  "product_name": "Canvas Corner Admin",
+  "objectives": [
+    "Secure admin access: owner-only",
+    "Prevent fallback admin access when Supabase disabled",
+    "Guard all admin feature pages"
+  ],
+  "requirements": [
+    {"id": "REQ-ADMIN-OWNER-ONLY", "description": "Only owner email has admin access"},
+    {"id": "REQ-ADMIN-NO-FALLBACK", "description": "No admin when VITE_SUPABASE_ENABLED=false"},
+    {"id": "REQ-ADMIN-PAGE-GUARDS", "description": "All admin pages enforce guard"}
+  ],
+  "user_roles": ["owner", "guest"],
+  "routes": ["/admin", "/admin/templates", "/admin/analytics", "/admin/settings"],
+  "env": {"frontend": ["VITE_SUPABASE_ENABLED"], "server": ["OWNER_EMAIL"]}
+}

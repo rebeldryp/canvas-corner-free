@@ -1,0 +1,1 @@
+This directory stores PRD input files for Testsprite.

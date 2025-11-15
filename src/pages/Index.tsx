@@ -5,13 +5,24 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Download, FileText, Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import heroImage from "@/assets/hero-image.jpg";
+import { toast } from "sonner";
 
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const { data: categories } = useQuery({
+  const SUPABASE_ENABLED = import.meta.env.VITE_SUPABASE_ENABLED !== "false";
+  const SUPABASE_READY = SUPABASE_ENABLED && Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+  const fallbackCategories = !SUPABASE_READY
+    ? [
+        { id: "general", name: "General", slug: "general" },
+        { id: "canvas", name: "Canvas", slug: "canvas" },
+        { id: "photo", name: "Photo", slug: "photo" },
+      ]
+    : null;
+  type Category = { id: string; name: string; slug: string };
+  const { data: categories, error: categoriesError, refetch: refetchCategories } = useQuery<Category[]>({
     queryKey: ["categories"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -21,9 +32,10 @@ const Index = () => {
       if (error) throw error;
       return data;
     },
+    enabled: SUPABASE_READY,
   });
 
-  const { data: templates, isLoading } = useQuery({
+  const { data: templates, isLoading, error: templatesError, refetch: refetchTemplates } = useQuery({
     queryKey: ["templates", activeCategory],
     queryFn: async () => {
       let query = supabase
@@ -46,7 +58,14 @@ const Index = () => {
       if (error) throw error;
       return data;
     },
+    enabled: SUPABASE_READY,
   });
+
+  useEffect(() => {
+    if (categoriesError || templatesError) {
+      toast.error("Failed to load data");
+    }
+  }, [categoriesError, templatesError]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -166,15 +185,49 @@ const Index = () => {
               </div>
             </div>
 
-            {categories && (
+            {(categories || fallbackCategories) && (
               <CategoryFilter
-                categories={categories}
+                categories={(categories ?? fallbackCategories ?? [])}
                 activeCategory={activeCategory}
                 onCategoryChange={setActiveCategory}
               />
             )}
 
-            {isLoading ? (
+            {(!SUPABASE_READY) || categoriesError || templatesError ? (
+              <div className="text-center py-16">
+                <h3 className="text-xl font-semibold mb-2">{!SUPABASE_READY ? "Live data disabled" : "Failed to load templates"}</h3>
+                <p className="text-muted-foreground mb-6">{!SUPABASE_READY ? "Enable Supabase in .env to load live templates." : "Please check your connection and try again."}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    refetchCategories();
+                    refetchTemplates();
+                  }}
+                >
+                  Retry
+                </Button>
+                <div className="mt-10">
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {[
+                      { id: "demo-1", title: "A4 Frame", category: { name: "General" }, preview_url: heroImage, downloads_count: 0, file_formats: ["pdf","png","jpg","svg"] },
+                      { id: "demo-2", title: "Square Canvas", category: { name: "General" }, preview_url: heroImage, downloads_count: 0, file_formats: ["pdf","png"] },
+                      { id: "demo-3", title: "Poster 18×24", category: { name: "General" }, preview_url: heroImage, downloads_count: 0, file_formats: ["pdf","jpg"] },
+                      { id: "demo-4", title: "Photo 5×7", category: { name: "General" }, preview_url: heroImage, downloads_count: 0, file_formats: ["png","jpg"] },
+                    ].map((template) => (
+                      <TemplateCard
+                        key={template.id}
+                        id={template.id}
+                        title={template.title}
+                        category={template.category?.name || "Uncategorized"}
+                        previewUrl={template.preview_url}
+                        downloads={template.downloads_count ?? 0}
+                        formats={template.file_formats ?? []}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : isLoading ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {[...Array(8)].map((_, i) => (
                   <div key={i} className="space-y-3">
@@ -193,8 +246,8 @@ const Index = () => {
                     title={template.title}
                     category={template.category?.name || "Uncategorized"}
                     previewUrl={template.preview_url}
-                    downloads={template.downloads_count}
-                    formats={template.file_formats}
+                    downloads={template.downloads_count ?? 0}
+                    formats={template.file_formats ?? []}
                   />
                 ))}
               </div>
